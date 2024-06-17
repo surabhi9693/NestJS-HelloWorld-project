@@ -1,0 +1,46 @@
+name: CI/CD for NestJS
+
+on:
+  push:
+    branches:
+      - main  # Trigger workflow on pushes to main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Adjust Node.js version as per your NestJS application's requirements
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build NestJS app
+        run: npm run build
+
+      - name: Run tests
+        run: npm test  # Replace with your test command
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build  # Ensure 'build' job completes successfully before deployment
+
+    steps:
+      - name: Deploy to EC2 instance
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}  # EC2 instance public IP or DNS
+          username: ${{ secrets.EC2_USERNAME }}  # SSH username (e.g., ec2-user)
+          key: ${{ secrets.SSH_PRIVATE_KEY }}  # SSH private key for authentication
+          script: |
+            cd .
+            git pull origin main  # Pull latest changes from GitHub
+            npm install --production  # Install production dependencies
+            pm2 restart ecosystem.config.js --env production  # Restart application using pm2 (adjust based on your setup)
+
