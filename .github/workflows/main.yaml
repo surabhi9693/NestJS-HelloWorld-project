@@ -38,4 +38,7 @@ jobs:
           script: |
             cd NestJS-HelloWorld-project/
             git pull origin main  # Pull latest changes from GitHub
-            npm install --production  # Install production dependencies
+            npm install -g @nestjs/cli
+            nest new nest-hello-world
+            cd nest-hello-world
+            npm run start:dev
