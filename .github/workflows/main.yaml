@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}  # SSH username (e.g., ec2-user)
           key: ${{ secrets.SSH_PRIVATE_KEY }}  # SSH private key for authentication
           script: |
-            cd .
+            cd NestJS-HelloWorld-project/
             git pull origin main  # Pull latest changes from GitHub
             npm install --production  # Install production dependencies
             pm2 restart ecosystem.config.js --env production  # Restart application using pm2 (adjust based on your setup)
